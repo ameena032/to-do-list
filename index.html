@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .todo-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px; /* Reduced padding for less space */
+            border-bottom: 1px solid #eee;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .empty-state {
+            text-align: center;
+            display: none; /* Hide initially */
+        }
+
+        .empty-state__title {
+            margin-top: 10px;
+        }
+
+        .todo-form {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .js-todo-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .js-todo-input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .delete-btn {
+            background: none; /* No background */
+            border: none; /* No border */
+            color: red; /* Red color for the text */
+            font-size: 16px; /* Font size for the cross mark */
+            cursor: pointer; /* Pointer cursor */
+            line-height: 1; /* Aligns vertically */
+            padding: 0; /* No padding */
+            margin-left: 10px; /* Space between text and button */
+            transition: color 0.2s; /* Smooth transition for hover */
+        }
+
+        .delete-btn:hover {
+            color: darkred; /* Darker red on hover */
+        }
+
+        .todo-checkbox {
+            margin-right: 10px; /* Space between checkbox and text */
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <div class="container">
+            <h1 class="app-title">todos</h1>
+            <ul class="todo-list js-todo-list"></ul>
+            
+            <div class="empty-state">
+                <svg class="checklist-icon"><use href="#checklist-icon"></use></svg>
+                <h2 class="empty-state__title">Add your first todo</h2>
+                <p class="empty-state__description">What do you want to get done today?</p>
+            </div>
+            
+            <form class="todo-form js-form">
+                <input autofocus type="text" aria-label="Enter a new todo item" placeholder="E.g. Build a web app" class="js-todo-input">
+            </form>
+        </div>
+    </main>
+
+    <svg style="display: none;">
+        <symbol id="checklist-icon" viewBox="0 0 24 24">
+            <path d="M10 15l-3-3 1.5-1.5L10 12l5.5-5.5L17 8l-7 7z"/>
+        </symbol>
+        <symbol id="delete-icon" viewBox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12"/>
+        </symbol>
+    </svg>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const todoList = document.querySelector('.js-todo-list');
+            const inputField = document.querySelector('.js-todo-input');
+            const emptyState = document.querySelector('.empty-state');
+
+            function updateEmptyState() {
+                if (todoList.children.length === 0) {
+                    emptyState.style.display = 'flex';
+                } else {
+                    emptyState.style.display = 'none';
+                }
+            }
+
+            function addTodoItem(event) {
+                event.preventDefault();
+                const todoText = inputField.value.trim();
+                if (todoText === '') return;
+
+                const todoItem = document.createElement('li');
+                todoItem.className = 'todo-item';
+                todoItem.innerHTML = `
+                    <input type="checkbox" class="todo-checkbox" aria-label="Mark this todo as completed">
+                    <span>${todoText}</span>
+                    <button class="delete-btn" aria-label="Delete this todo">✖</button> <!-- Red cross mark -->
+                `;
+                
+                // Add event listener for completing the todo with checkbox
+                todoItem.querySelector('.todo-checkbox').addEventListener('change', function () {
+                    todoItem.classList.toggle('completed', this.checked);
+                });
+
+                // Add event listener for deleting the todo
+                todoItem.querySelector('.delete-btn').addEventListener('click', function () {
+                    todoItem.remove();
+                    updateEmptyState();
+                });
+
+                todoList.appendChild(todoItem);
+                inputField.value = ''; // Clear input
+                updateEmptyState(); // Update empty state visibility
+            }
+
+            document.querySelector('.js-form').addEventListener('submit', addTodoItem);
+            updateEmptyState(); // Initial call to update the empty state
+        });
+    </script>
+</body>
+</html>
